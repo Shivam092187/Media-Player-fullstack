@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://localhost:3000/api",
+  baseURL: import.meta.env.VITE_API_URL + "/api",
 });
 
 // 🔐 Token auto attach
@@ -26,10 +26,10 @@ export const createMusic = (data) =>
 // 🎵 Get all songs
 export const getAllSongs = () => API.get("/music");
 
-// 🔥 NEW: Play song (IMPORTANT)
+// 🎵 Play song
 export const playSong = (id) => API.get(`/music/play/${id}`);
 
-// 🔥 NEW: Analytics
+// 🎵 Analytics
 export const getAnalytics = () => API.get("/music/analytics");
 
 export default API;
