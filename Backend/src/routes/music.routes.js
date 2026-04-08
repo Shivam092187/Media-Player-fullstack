@@ -1,37 +1,40 @@
 const express = require('express');
 const multer = require('multer');
-const authMiddleware = require('../middleware/auth.middleware');
+const { authArtist, authUser } = require('../middleware/auth.middleware');
 const musicController = require('../controllers/music.controller');
-
-const upload = multer({ 
-  storage: multer.memoryStorage(), 
-  limits: { fileSize: 10 * 1024 * 1024 } 
-});
 
 const router = express.Router();
 
-// ✅ Upload song (artist only)
+// ✅ Multer config
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 } // 10MB
+});
+
+// ================= ROUTES =================
+
+// 🎵 Upload song (artist only)
 router.post(
   "/upload",
-  authMiddleware.authArtist,
-  upload.single("music"),
+  authArtist,
+  upload.single("music"), // ⚠️ field name must match frontend
   musicController.musicCreate
 );
 
-// ✅ Get all songs
+// 🎧 Get all songs (public)
 router.get("/", musicController.getAllmusic);
 
-// 🔥 NEW: Play song (increment plays)
+// ▶️ Play song (login required)
 router.get(
   "/play/:id",
-  authMiddleware.authUser,
+  authUser,
   musicController.playSong
 );
 
-// 🔥 NEW: Analytics (artist only)
+// 📊 Analytics (artist only)
 router.get(
   "/analytics",
-  authMiddleware.authArtist,
+  authArtist,
   musicController.getAnalytics
 );
 

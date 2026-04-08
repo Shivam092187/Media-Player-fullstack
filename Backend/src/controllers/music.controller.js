@@ -106,6 +106,6 @@ const getAnalytics = async (req, res) => {
 module.exports = {
   musicCreate,
   getAllmusic,
-  playSong,      // ✅ export
-  getAnalytics   // ✅ export
+  playSong,      
+  getAnalytics   
 };

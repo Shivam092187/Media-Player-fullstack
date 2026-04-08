@@ -1,35 +1,22 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: import.meta.env.VITE_API_URL + "/api",
+  baseURL: "http://localhost:3000/api"
 });
 
-// 🔐 Token auto attach
-API.interceptors.request.use(config => {
+// 🔥 TOKEN AUTO ATTACH
+API.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
-  if (token) config.headers.Authorization = `Bearer ${token}`;
+
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
   return config;
 });
 
-// ================= AUTH =================
-export const registerUser = (data) => API.post("/auth/register", data);
-export const loginUser = (data) => API.post("/auth/login", data);
-
-// ================= MUSIC =================
-
-// 🎵 Upload
-export const createMusic = (data) =>
-  API.post("/music/upload", data, {
-    headers: { "Content-Type": "multipart/form-data" }
-  });
-
-// 🎵 Get all songs
+// ✅ APIs
 export const getAllSongs = () => API.get("/music");
-
-// 🎵 Play song
 export const playSong = (id) => API.get(`/music/play/${id}`);
-
-// 🎵 Analytics
-export const getAnalytics = () => API.get("/music/analytics");
 
 export default API;

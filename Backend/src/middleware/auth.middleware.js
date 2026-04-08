@@ -1,43 +1,48 @@
 const jwt = require("jsonwebtoken");
 
-const authArtist = (req, res, next) => {
+// 🔐 Common function (DRY principle)
+const verifyToken = (req) => {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return null;
+  }
+
+  const token = authHeader.split(" ")[1];
+
   try {
-    const token = req.headers.authorization?.split(" ")[1];
-
-    if (!token) {
-      return res.status(401).json({ message: "No token" });
-    }
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    if (decoded.role !== "artist") {
-      return res.status(403).json({ message: "Access denied" });
-    }
-
-    req.user = decoded;
-    next();
-
+    return jwt.verify(token, process.env.JWT_SECRET);
   } catch (err) {
-    return res.status(401).json({ message: "Invalid token" });
+    return null;
   }
 };
 
+// ================= USER AUTH =================
 const authUser = (req, res, next) => {
-  try {
-    const token = req.headers.authorization?.split(" ")[1];
+  const decoded = verifyToken(req);
 
-    if (!token) {
-      return res.status(401).json({ message: "No token" });
-    }
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    req.user = decoded;
-    next();
-
-  } catch (err) {
-    return res.status(401).json({ message: "Invalid token" });
+  if (!decoded) {
+    return res.status(401).json({ message: "Unauthorized" });
   }
+
+  req.user = decoded;
+  next();
 };
 
-module.exports = { authArtist, authUser };
+// ================= ARTIST AUTH =================
+const authArtist = (req, res, next) => {
+  const decoded = verifyToken(req);
+
+  if (!decoded) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  if (decoded.role !== "artist") {
+    return res.status(403).json({ message: "Only artists allowed" });
+  }
+
+  req.user = decoded;
+  next();
+};
+
+module.exports = { authUser, authArtist };
