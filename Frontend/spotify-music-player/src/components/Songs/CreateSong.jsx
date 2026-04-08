@@ -75,7 +75,7 @@ const CreateSong = ({ onUpload }) => {
               id="fileUpload"
             />
             <label htmlFor="fileUpload" className="cursor-pointer text-gray-400">
-              🎧 Click to select audio file
+               Click to select audio file
             </label>
 
             {file && (

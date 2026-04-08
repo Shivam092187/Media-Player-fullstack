@@ -17,11 +17,11 @@ const SongList = () => {
     try {
       console.log("CLICKED PLAY:", song._id);
 
-      const res = await playSong(song._id); // 🔥 MUST HIT
+      const res = await playSong(song._id); 
 
       console.log("API RESPONSE:", res.data);
 
-      setCurrentSong(res.data.uri); // सिर्फ uri set करो
+      setCurrentSong(res.data.uri); 
 
     } catch (err) {
       console.error("PLAY ERROR:", err);
