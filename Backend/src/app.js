@@ -8,7 +8,7 @@ const musicRoutes = require('./routes/music.routes');
 
 const app = express();
 
-// 🔥 FIXED CORS
+//  FIXED CORS
 app.use(cors({
   origin: "http://localhost:5173",
   credentials: true
