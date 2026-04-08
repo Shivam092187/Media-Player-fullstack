@@ -1,8 +1,11 @@
 import axios from "axios";
 
+
 const API = axios.create({
-  baseURL: "http://localhost:3000/api"
+  baseURL: "https://media-player-fullstack.onrender.com/api",
+  withCredentials: true // agar cookies/token backend se bhej rahe ho
 });
+
 
 // 🔥 TOKEN AUTO ATTACH
 API.interceptors.request.use((config) => {
