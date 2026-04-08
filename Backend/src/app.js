@@ -6,7 +6,13 @@ const musicRoutes = require("./routes/music.routes");
 
 const app = express();
 
-app.use(cors());
+const FRONTEND_URL = process.env.FRONTEND_URL;
+
+app.use(cors({
+  origin: FRONTEND_URL,   // sirf frontend allow hoga
+  credentials: true       // cookies/token ke liye
+}));
+
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);
