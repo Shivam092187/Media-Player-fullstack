@@ -1,9 +1,10 @@
-require("dotenv").config({ path: "./.env" });
-const app = require("./src/app")
-const connectDB = require('./src/db/db')
+const express = require("express");
+const app = express();
 
-connectDB();
+app.get("/", (req, res) => {
+  res.send("Spotify Backend Running");
+});
 
-app.listen(3000,()=>{
-    console.log("server is running on port 3000");
-})
+app.listen(3000, () => {
+  console.log("Server running on port 5000");
+});

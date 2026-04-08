@@ -25,6 +25,4 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/auth', authRoutes);
 app.use('/api/music', musicRoutes);
 
-app.get('/', (req, res) => res.send('Spotify Clone Backend Running 🚀'));
-
 module.exports = app;
