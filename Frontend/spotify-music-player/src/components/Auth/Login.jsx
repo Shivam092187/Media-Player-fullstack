@@ -7,34 +7,25 @@ const Login = ({ setUser }) => {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  if (!loginField || !password) return alert("Please fill all fields!");
 
-    if (!loginField || !password) return alert("Please fill all fields!");
-
-    try {
-      // 🔹 Backend expects { email, username, password } OR { loginField, password }
-      const data = {
-        // backend will handle either email or username
-        email: loginField,   // backend will pick whichever is sent
-        username: loginField,
-        password,
-      };
-
-      const res = await loginUser(data);
-
-      // Save token
-      localStorage.setItem("token", res.data.token);
-
-      // Set user in app state
-      setUser(res.data.user);
-
-      // Redirect based on role
-      navigate(res.data.user.role === "artist" ? "/artist" : "/user");
-    } catch (err) {
-      alert(err.response?.data?.message || "Login failed");
-    }
+  const data = {
+    email: loginField,
+    username: loginField,
+    password,
   };
+
+  try {
+    const res = await loginUser(data);
+    localStorage.setItem("token", res.data.token);
+    setUser(res.data.user);
+    navigate(res.data.user.role === "artist" ? "/artist" : "/user");
+  } catch (err) {
+    alert(err.response?.data?.message || "Login failed");
+  }
+};
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-900">
