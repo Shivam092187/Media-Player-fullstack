@@ -43,15 +43,15 @@ const LoginUser = async (req, res) => {
   try {
     const { email, username, password } = req.body;
 
-    if ((!email && !username) || !password) {
+    if (!password || (!email && !username)) {
       return res.status(400).json({ message: "Please provide email or username, and password" });
     }
 
-    // Find user dynamically
+    // Search user based on whichever field is filled
     let user;
     if (email) {
       user = await userModel.findOne({ email });
-    } else {
+    } else if (username) {
       user = await userModel.findOne({ username });
     }
 
@@ -60,11 +60,7 @@ const LoginUser = async (req, res) => {
     const validPassword = await bcrypt.compare(password, user.password);
     if (!validPassword) return res.status(401).json({ message: "Invalid password" });
 
-    const token = jwt.sign(
-      { id: user._id, role: user.role },
-      process.env.JWT_SECRET,
-      { expiresIn: "7d" }
-    );
+    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "7d" });
 
     res.cookie("token", token, {
       httpOnly: true,
@@ -74,12 +70,7 @@ const LoginUser = async (req, res) => {
     res.status(200).json({
       message: "Login successful",
       token,
-      user: {
-        id: user._id,
-        username: user.username,
-        email: user.email,
-        role: user.role,
-      },
+      user: { id: user._id, username: user.username, email: user.email, role: user.role },
     });
 
   } catch (error) {
