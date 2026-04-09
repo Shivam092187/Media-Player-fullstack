@@ -41,33 +41,21 @@ const userRegister = async (req, res) => {
 
 async function LoginUser(req, res) {
   try {
-    const { loginInput, password } = req.body; // frontend se ye expect
+   const { loginInput, password } = req.body;
 
-    // Find user by username OR email
-    const user = await userModel.findOne({
-      $or: [{ username: loginInput }, { email: loginInput }]
-    });
+const user = await userModel.findOne({
+  $or: [{ username: loginInput }, { email: loginInput }]
+});
 
-    if (!user) return res.status(404).json({ message: "User not found" });
+if (!user) return res.status(404).json({ message: "User not found" });
 
-    const validPassword = await bcrypt.compare(password, user.password);
-    if (!validPassword) return res.status(401).json({ message: "Invalid password" });
+const validPassword = await bcrypt.compare(password, user.password);
+if (!validPassword) return res.status(401).json({ message: "Invalid password" });
 
-    // Generate JWT token
-    const token = jwt.sign(
-      { id: user._id, role: user.role },
-      process.env.JWT_SECRET,
-      { expiresIn: "7d" }
-    );
+const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "7d" });
 
-    // Set secure cookie in production
-    res.cookie("token", token, { httpOnly: true, secure: process.env.NODE_ENV === "production" });
-
-    res.status(200).json({
-      message: "Login successful",
-      token,
-      user: { id: user._id, username: user.username, email: user.email, role: user.role }
-    });
+res.cookie("token", token, { httpOnly: true, secure: process.env.NODE_ENV === "production" });
+res.status(200).json({ message: "Login successful", token, user: { id: user._id, username: user.username, email: user.email, role: user.role } });
   } catch (error) {
     console.error("LOGIN ERROR:", error);
     res.status(500).json({ message: "Internal server error", error });
