@@ -3,17 +3,17 @@ import { useNavigate } from "react-router-dom";
 import { loginUser } from "../../services/api";
 
 const Login = ({ setUser }) => {
-  const [loginInput, setLoginInput] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!loginInput || !password) return alert("Please fill all fields!");
+    if (!email || !password) return alert("Please fill all fields!");
 
     try {
-      const res = await loginUser({ loginInput, password });
+      const res = await loginUser({ email, password });
 
       // Save token
       localStorage.setItem("token", res.data.token);
@@ -41,7 +41,7 @@ const Login = ({ setUser }) => {
           type="text"
           placeholder="Email or Username"
           value={loginInput}
-          onChange={(e) => setLoginInput(e.target.value)}
+          onChange={(e) => setEmail(e.target.value)}
           className="p-3 rounded bg-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500"
         />
 
