@@ -3,27 +3,26 @@ import { useNavigate } from "react-router-dom";
 import { loginUser } from "../../services/api";
 
 const Login = ({ setUser }) => {
-  const [email, setEmail] = useState("");
+  const [loginInput, setLoginInput] = useState(""); // username OR email
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!email || !password) return alert("Please fill all fields!");
+    if (!loginInput || !password) return alert("Please fill all fields!");
 
     try {
-      const res = await loginUser({ email, password });
+      const res = await loginUser({ loginInput, password });
 
       // Save token
       localStorage.setItem("token", res.data.token);
 
-      // Set user in app state
+      // Set user
       setUser(res.data.user);
 
       // Redirect based on role
       navigate(res.data.user.role === "artist" ? "/artist" : "/user");
-
     } catch (err) {
       alert(err.response?.data?.message || "Login failed");
     }
@@ -41,7 +40,7 @@ const Login = ({ setUser }) => {
           type="text"
           placeholder="Email or Username"
           value={loginInput}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => setLoginInput(e.target.value)}
           className="p-3 rounded bg-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500"
         />
 
