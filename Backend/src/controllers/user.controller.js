@@ -38,22 +38,14 @@ const userRegister = async (req, res) => {
   }
 };
 
-const LoginUser = async (req, res) => {
+
+async function LoginUser(req, res) {
   try {
-    console.log("REQ BODY:", req.body);
+    const { loginInput, password } = req.body; // frontend se ye expect
 
-    const { username, email, password } = req.body; // frontend se ye expect karo
-
-    if ((!email && !username) || !password) {
-      return res.status(400).json({ message: "Missing fields" });
-    }
-
-    // DB search
+    // Find user by username OR email
     const user = await userModel.findOne({
-      $or: [
-        { username: username?.trim().toLowerCase() },
-        { email: email?.trim().toLowerCase() }
-      ]
+      $or: [{ username: loginInput }, { email: loginInput }]
     });
 
     if (!user) return res.status(404).json({ message: "User not found" });
@@ -61,29 +53,27 @@ const LoginUser = async (req, res) => {
     const validPassword = await bcrypt.compare(password, user.password);
     if (!validPassword) return res.status(401).json({ message: "Invalid password" });
 
+    // Generate JWT token
     const token = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
     );
 
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
-    });
+    // Set secure cookie in production
+    res.cookie("token", token, { httpOnly: true, secure: process.env.NODE_ENV === "production" });
 
     res.status(200).json({
       message: "Login successful",
       token,
       user: { id: user._id, username: user.username, email: user.email, role: user.role }
     });
-
-  } catch (err) {
-    console.error("LOGIN ERROR:", err);
-    res.status(500).json({ message: "Internal server error" });
+  } catch (error) {
+    console.error("LOGIN ERROR:", error);
+    res.status(500).json({ message: "Internal server error", error });
   }
-};
+}
+
 
 async function LogoutUser(req, res) {
     res.clearCookie("token");
