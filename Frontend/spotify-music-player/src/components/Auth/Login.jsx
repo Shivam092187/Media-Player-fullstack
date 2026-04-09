@@ -11,16 +11,27 @@ const Login = ({ setUser }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if ((!email && !username) || !password) {
+    const trimmedEmail = email.trim();
+    const trimmedUsername = username.trim();
+    const trimmedPassword = password.trim();
+
+    if ((!trimmedEmail && !trimmedUsername) || !trimmedPassword) {
       return alert("Please fill email or username and password!");
     }
 
     try {
-      // ✅ Only send filled field
-      const data = { password };
+      // ONLY ONE FIELD SEND (IMPORTANT)
+      const data = {
+        password: trimmedPassword,
+      };
 
-      if (email.trim()) data.email = email.trim();
-      if (username.trim()) data.username = username.trim();
+      if (trimmedEmail) {
+        data.email = trimmedEmail;
+      } else {
+        data.username = trimmedUsername;
+      }
+
+      console.log("LOGIN DATA:", data); // 🔍 debug
 
       const res = await loginUser(data);
 
@@ -30,6 +41,7 @@ const Login = ({ setUser }) => {
       navigate(res.data.user.role === "artist" ? "/artist" : "/user");
 
     } catch (err) {
+      console.log("LOGIN ERROR:", err.response?.data);
       alert(err.response?.data?.message || "Login failed");
     }
   };

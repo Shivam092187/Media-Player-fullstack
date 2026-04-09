@@ -40,23 +40,26 @@ const userRegister = async (req, res) => {
 
 const LoginUser = async (req, res) => {
   try {
-    const { email, username, password } = req.body;
+    let { email, username, password } = req.body;
 
-    // ✅ Validation
+    // ✅ Trim all inputs
+    email = email?.trim();
+    username = username?.trim();
+    password = password?.trim();
+
     if (!password || (!email && !username)) {
       return res.status(400).json({
-        message: "Please provide email or username, and password",
+        message: "Please provide email or username and password",
       });
     }
 
-    let user;
-
-    // ✅ Clean & safe check
-    if (email?.trim()) {
-      user = await userModel.findOne({ email: email.trim() });
-    } else if (username?.trim()) {
-      user = await userModel.findOne({ username: username.trim() });
-    }
+    // ✅ SINGLE QUERY (BEST FIX)
+    const user = await userModel.findOne({
+      $or: [
+        { email: email || null },
+        { username: username || null }
+      ]
+    });
 
     console.log("USER FOUND:", user);
 
@@ -64,7 +67,7 @@ const LoginUser = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // ✅ Password match
+    // ✅ Password compare
     const validPassword = await bcrypt.compare(password, user.password);
 
     console.log("PASSWORD MATCH:", validPassword);
@@ -80,13 +83,6 @@ const LoginUser = async (req, res) => {
       { expiresIn: "7d" }
     );
 
-    // ✅ Cookie
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-    });
-
-    // ✅ Response
     res.status(200).json({
       message: "Login successful",
       token,
@@ -104,7 +100,7 @@ const LoginUser = async (req, res) => {
   }
 };
 
-module.exports = { LoginUser };
+
 
 
 async function LogoutUser(req, res) {
