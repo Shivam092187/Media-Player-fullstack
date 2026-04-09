@@ -47,7 +47,7 @@ const LoginUser = async (req, res) => {
       return res.status(400).json({ message: "Please provide email or username, and password" });
     }
 
-    // Search user based on whichever field is filled
+    // User find based on email or username
     let user;
     if (email) {
       user = await userModel.findOne({ email });
