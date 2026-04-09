@@ -42,45 +42,37 @@ const LoginUser = async (req, res) => {
   try {
     console.log("REQ BODY:", req.body);
 
-    // ✅ Frontend se loginInput ya email
-    const loginInput = req.body.loginInput || req.body.email;
-    const password = req.body.password;
+    const { username, email, password } = req.body; // frontend se ye expect karo
 
-    if (!loginInput || !password)
+    if ((!email && !username) || !password) {
       return res.status(400).json({ message: "Missing fields" });
+    }
 
-    // ✅ Normalize input
-    const cleanedInput = loginInput.trim().toLowerCase();
-
-    // ✅ Find user by username or email (case-insensitive)
+    // DB search
     const user = await userModel.findOne({
       $or: [
-        { username: cleanedInput },
-        { email: cleanedInput }
+        { username: username?.trim().toLowerCase() },
+        { email: email?.trim().toLowerCase() }
       ]
     });
 
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    // ✅ Validate password
     const validPassword = await bcrypt.compare(password, user.password);
     if (!validPassword) return res.status(401).json({ message: "Invalid password" });
 
-    // ✅ Sign JWT
     const token = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
     );
 
-    // ✅ Set cookie (cross-domain safe)
     res.cookie("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
     });
 
-    // ✅ Send response
     res.status(200).json({
       message: "Login successful",
       token,
