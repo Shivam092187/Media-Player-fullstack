@@ -9,7 +9,8 @@ const app = express();
 // CORS Configuration
 const allowedOrigins = [
   "http://localhost:5173", // frontend local dev
-  "https://media-player-fullstack-2.onrender.com" // frontend live
+  "https://media-player-fullstack-2.onrender.com", // frontend live
+  
 ];
 
 app.use(cors({

@@ -39,28 +39,53 @@ const userRegister = async (req, res) => {
 };
 
 
-async function LoginUser(req, res) {
+const LoginUser = async (req, res) => {
   try {
-   const { loginInput, password } = req.body;
+    console.log("REQ BODY:", req.body); // debug
 
-const user = await userModel.findOne({
-  $or: [{ username: loginInput }, { email: loginInput }]
-});
+    const { email, username, password } = req.body;
 
-if (!user) return res.status(404).json({ message: "User not found" });
+    // Check email or username
+    const loginField = email || username; // frontend dono me se bhejega
 
-const validPassword = await bcrypt.compare(password, user.password);
-if (!validPassword) return res.status(401).json({ message: "Invalid password" });
+    if (!loginField || !password)
+      return res.status(400).json({ message: "Missing fields" });
 
-const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "7d" });
+    const user = await userModel.findOne({
+      $or: [{ username: loginField }, { email: loginField }]
+    });
 
-res.cookie("token", token, { httpOnly: true, secure: process.env.NODE_ENV === "production" });
-res.status(200).json({ message: "Login successful", token, user: { id: user._id, username: user.username, email: user.email, role: user.role } });
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    const validPassword = await bcrypt.compare(password, user.password);
+    if (!validPassword) return res.status(401).json({ message: "Invalid password" });
+
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+    });
+
+    res.status(200).json({
+      message: "Login successful",
+      token,
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+      },
+    });
   } catch (error) {
     console.error("LOGIN ERROR:", error);
     res.status(500).json({ message: "Internal server error", error });
   }
-}
+};
 
 
 async function LogoutUser(req, res) {

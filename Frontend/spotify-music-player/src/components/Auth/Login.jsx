@@ -3,22 +3,30 @@ import { useNavigate } from "react-router-dom";
 import { loginUser } from "../../services/api";
 
 const Login = ({ setUser }) => {
-  const [loginInput, setLoginInput] = useState(""); // username OR email
+  const [loginField, setLoginField] = useState(""); // email OR username
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!loginInput || !password) return alert("Please fill all fields!");
+    if (!loginField || !password) return alert("Please fill all fields!");
 
     try {
-      const res = await loginUser({ loginInput, password });
+      // 🔹 Backend expects { email, username, password } OR { loginField, password }
+      const data = {
+        // backend will handle either email or username
+        email: loginField,   // backend will pick whichever is sent
+        username: loginField,
+        password,
+      };
+
+      const res = await loginUser(data);
 
       // Save token
       localStorage.setItem("token", res.data.token);
 
-      // Set user
+      // Set user in app state
       setUser(res.data.user);
 
       // Redirect based on role
@@ -39,8 +47,8 @@ const Login = ({ setUser }) => {
         <input
           type="text"
           placeholder="Email or Username"
-          value={loginInput}
-          onChange={(e) => setLoginInput(e.target.value)}
+          value={loginField}
+          onChange={(e) => setLoginField(e.target.value)}
           className="p-3 rounded bg-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500"
         />
 
