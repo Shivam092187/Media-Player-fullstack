@@ -41,43 +41,36 @@ const userRegister = async (req, res) => {
 
 const LoginUser = async (req, res) => {
   try {
-    console.log("REQ BODY:", req.body); // debug
-
     const { email, username, password } = req.body;
 
-    // Validation
     if ((!email && !username) || !password) {
       return res.status(400).json({ message: "Please provide email or username, and password" });
     }
 
-    //  Directly find user by email or username
-    const user = await userModel.findOne({
-      $or: [
-        { email: email || null },
-        { username: username || null }
-      ]
-    });
+    // Find user dynamically
+    let user;
+    if (email) {
+      user = await userModel.findOne({ email });
+    } else {
+      user = await userModel.findOne({ username });
+    }
 
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    //  Compare password
     const validPassword = await bcrypt.compare(password, user.password);
     if (!validPassword) return res.status(401).json({ message: "Invalid password" });
 
-    //  Create JWT token
     const token = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
     );
 
-    // Set cookie
     res.cookie("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
     });
 
-    //  Send response
     res.status(200).json({
       message: "Login successful",
       token,
