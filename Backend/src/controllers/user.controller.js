@@ -45,32 +45,39 @@ const LoginUser = async (req, res) => {
 
     const { email, username, password } = req.body;
 
-    // Check email or username
-    const loginField = email || username; // frontend dono me se bhejega
+    // Validation
+    if ((!email && !username) || !password) {
+      return res.status(400).json({ message: "Please provide email or username, and password" });
+    }
 
-    if (!loginField || !password)
-      return res.status(400).json({ message: "Missing fields" });
-
+    //  Directly find user by email or username
     const user = await userModel.findOne({
-      $or: [{ username: loginField }, { email: loginField }]
+      $or: [
+        { email: email || null },
+        { username: username || null }
+      ]
     });
 
     if (!user) return res.status(404).json({ message: "User not found" });
 
+    //  Compare password
     const validPassword = await bcrypt.compare(password, user.password);
     if (!validPassword) return res.status(401).json({ message: "Invalid password" });
 
+    //  Create JWT token
     const token = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
     );
 
+    // Set cookie
     res.cookie("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
     });
 
+    //  Send response
     res.status(200).json({
       message: "Login successful",
       token,
@@ -81,6 +88,7 @@ const LoginUser = async (req, res) => {
         role: user.role,
       },
     });
+
   } catch (error) {
     console.error("LOGIN ERROR:", error);
     res.status(500).json({ message: "Internal server error", error });

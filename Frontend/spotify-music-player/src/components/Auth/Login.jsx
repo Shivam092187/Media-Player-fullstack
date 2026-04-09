@@ -3,29 +3,35 @@ import { useNavigate } from "react-router-dom";
 import { loginUser } from "../../services/api";
 
 const Login = ({ setUser }) => {
-  const [loginField, setLoginField] = useState(""); // email OR username
+  const [email, setEmail] = useState("");     // user can enter email
+  const [username, setUsername] = useState(""); // user can enter username
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
- const handleSubmit = async (e) => {
-  e.preventDefault();
-  if (!loginField || !password) return alert("Please fill all fields!");
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  const data = {
-    email: loginField,
-    username: loginField,
-    password,
+    // ✅ At least one of email or username required
+    if ((!email && !username) || !password) {
+      return alert("Please fill email or username and password!");
+    }
+
+    try {
+      const res = await loginUser({ email, username, password });
+
+      // Save token
+      localStorage.setItem("token", res.data.token);
+
+      // Set user in app state
+      setUser(res.data.user);
+
+      // Redirect based on role
+      navigate(res.data.user.role === "artist" ? "/artist" : "/user");
+
+    } catch (err) {
+      alert(err.response?.data?.message || "Login failed");
+    }
   };
-
-  try {
-    const res = await loginUser(data);
-    localStorage.setItem("token", res.data.token);
-    setUser(res.data.user);
-    navigate(res.data.user.role === "artist" ? "/artist" : "/user");
-  } catch (err) {
-    alert(err.response?.data?.message || "Login failed");
-  }
-};
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-900">
@@ -37,9 +43,17 @@ const Login = ({ setUser }) => {
 
         <input
           type="text"
-          placeholder="Email or Username"
-          value={loginField}
-          onChange={(e) => setLoginField(e.target.value)}
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="p-3 rounded bg-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+        />
+
+        <input
+          type="text"
+          placeholder="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
           className="p-3 rounded bg-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500"
         />
 
