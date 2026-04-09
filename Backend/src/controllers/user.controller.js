@@ -38,34 +38,60 @@ const userRegister = async (req, res) => {
   }
 };
 
-async function LoginUser(req, res) {
-    try {
-        console.log("REQ BODY:", req.body);
+const LoginUser = async (req, res) => {
+  try {
+    console.log("REQ BODY:", req.body);
 
-        const { email, password } = req.body; // frontend se ye expect karo
+    // ✅ Frontend se loginInput ya email
+    const loginInput = req.body.loginInput || req.body.email;
+    const password = req.body.password;
 
-        const user = await userModel.findOne({
-            $or: [{ username: email }, { email }]
-        });
-        if (!user) return res.status(404).json({ message: "User not found" });
+    if (!loginInput || !password)
+      return res.status(400).json({ message: "Missing fields" });
 
-        const validPassword = await bcrypt.compare(password, user.password);
-        if (!validPassword) return res.status(401).json({ message: "Invalid password" });
+    // ✅ Normalize input
+    const cleanedInput = loginInput.trim().toLowerCase();
 
-        const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "7d" });
+    // ✅ Find user by username or email (case-insensitive)
+    const user = await userModel.findOne({
+      $or: [
+        { username: cleanedInput },
+        { email: cleanedInput }
+      ]
+    });
 
-        res.cookie("token", token, { httpOnly: true, secure: process.env.NODE_ENV === "production" });
-        res.status(200).json({
-            message: "Login successful",
-            token,
-            user: { id: user._id, username: user.username, email: user.email, role: user.role }
-        });
+    if (!user) return res.status(404).json({ message: "User not found" });
 
-    } catch (error) {
-        console.error("LOGIN ERROR:", error);
-        res.status(500).json({ message: "Internal server error", error });
-    }
-}
+    // ✅ Validate password
+    const validPassword = await bcrypt.compare(password, user.password);
+    if (!validPassword) return res.status(401).json({ message: "Invalid password" });
+
+    // ✅ Sign JWT
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    // ✅ Set cookie (cross-domain safe)
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
+    });
+
+    // ✅ Send response
+    res.status(200).json({
+      message: "Login successful",
+      token,
+      user: { id: user._id, username: user.username, email: user.email, role: user.role }
+    });
+
+  } catch (err) {
+    console.error("LOGIN ERROR:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
 
 async function LogoutUser(req, res) {
     res.clearCookie("token");

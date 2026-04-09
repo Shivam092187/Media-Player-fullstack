@@ -1,35 +1,27 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import API from "../../services/api";
+import { loginUser } from "../../services/api";
 
 const Login = ({ setUser }) => {
   const [loginInput, setLoginInput] = useState("");
   const [password, setPassword] = useState("");
-
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // ✅ Validation
-    if (!loginInput || !password) {
-      alert("Please fill all fields!");
-      return;
-    }
+    if (!loginInput || !password) return alert("Please fill all fields!");
 
     try {
-      const res = await API.post("/auth/login", {
-        loginInput,
-        password,
-      });
+      const res = await loginUser({ loginInput, password });
 
-      // ✅ Save token
+      // Save token
       localStorage.setItem("token", res.data.token);
 
-      // ✅ Set user
+      // Set user in app state
       setUser(res.data.user);
 
-      // ✅ Redirect based on role
+      // Redirect based on role
       navigate(res.data.user.role === "artist" ? "/artist" : "/user");
 
     } catch (err) {
