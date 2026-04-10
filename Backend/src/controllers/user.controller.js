@@ -42,9 +42,6 @@ const userRegister = async (req, res) => {
   }
 };
 
-const userModel = require("../models/user.model");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
 
 const LoginUser = async (req, res) => {
   try {
