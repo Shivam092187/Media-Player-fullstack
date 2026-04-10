@@ -4,45 +4,52 @@ const jwt = require('jsonwebtoken');
 
 const userRegister = async (req, res) => {
   try {
-    console.log("REQ BODY:", req.body); // 
+    let { username, email, password, role } = req.body;
 
-    const { username, email, password, role = "user" } = req.body;
+    username = username?.trim();
+    email = email?.trim();
+    password = password?.trim();
 
     if (!username || !email || !password) {
       return res.status(400).json({ message: "Missing fields" });
     }
 
-    const isUserAlreadyExist = await userModel.findOne({
-      $or: [{ username }, { email }]
+    const exists = await userModel.findOne({
+      $or: [{ email }, { username }],
     });
-    if (isUserAlreadyExist)
+
+    if (exists) {
       return res.status(409).json({ message: "User already exists" });
+    }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await userModel.create({ username, email, password: hashedPassword, role });
 
-    console.log("USER CREATED:", user); // 🔥 successful creation
-
-    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "7d" });
-
-    res.cookie("token", token, { httpOnly: true });
-    res.status(201).json({
-      message: "User registered successfully",
-      token,
-      user: { id: user._id, username: user.username, email: user.email, role: user.role }
+    const user = await userModel.create({
+      username,
+      email,
+      password: hashedPassword,
+      role: role || "user",
     });
 
-  } catch (error) {
-    console.error("REGISTER ERROR:", error); // 
-    res.status(500).json({ message: "Internal server error" });
+    res.status(201).json({
+      message: "User registered successfully",
+      user,
+    });
+
+  } catch (err) {
+    console.log("REGISTER ERROR:", err);
+    res.status(500).json({ message: "Server error" });
   }
 };
+
+const userModel = require("../models/user.model");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 const LoginUser = async (req, res) => {
   try {
     let { email, username, password } = req.body;
 
-    // ✅ Trim all inputs
     email = email?.trim();
     username = username?.trim();
     password = password?.trim();
@@ -53,30 +60,25 @@ const LoginUser = async (req, res) => {
       });
     }
 
-    // ✅ SINGLE QUERY (BEST FIX)
+   
     const user = await userModel.findOne({
       $or: [
-        { email: email || null },
-        { username: username || null }
-      ]
+        email ? { email } : null,
+        username ? { username } : null,
+      ].filter(Boolean),
     });
-
-    console.log("USER FOUND:", user);
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // ✅ Password compare
-    const validPassword = await bcrypt.compare(password, user.password);
+    // password check
+    const isMatch = await bcrypt.compare(password, user.password);
 
-    console.log("PASSWORD MATCH:", validPassword);
-
-    if (!validPassword) {
+    if (!isMatch) {
       return res.status(401).json({ message: "Invalid password" });
     }
 
-    // ✅ Token
     const token = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_SECRET,
@@ -94,11 +96,13 @@ const LoginUser = async (req, res) => {
       },
     });
 
-  } catch (error) {
-    console.error("LOGIN ERROR:", error);
+  } catch (err) {
+    console.log("LOGIN ERROR:", err);
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+module.exports = { LoginUser };
 
 
 

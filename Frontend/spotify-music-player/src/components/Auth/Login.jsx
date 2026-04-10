@@ -3,40 +3,42 @@ import { useNavigate } from "react-router-dom";
 import { loginUser } from "../../services/api";
 
 const Login = ({ setUser }) => {
-  const [loginInput, setLoginInput] = useState("");
+  const [input, setInput] = useState(""); // email OR username
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const input = loginInput.trim();
-    const pass = password.trim();
-
-    if (!input || !pass) {
-      return alert("Please fill all fields!");
+    if (!input || !password) {
+      return alert("Please fill all fields");
     }
 
     try {
-      // Detect email or username
-      const data = {
-        password: pass,
+      // check: email hai ya username
+      const payload = {
+        password: password,
         ...(input.includes("@")
           ? { email: input }
           : { username: input }),
       };
 
-      console.log("LOGIN DATA:", data);
+      const res = await loginUser(payload);
 
-      const res = await loginUser(data);
-
+      // save token
       localStorage.setItem("token", res.data.token);
+
+      // user store in state
       setUser(res.data.user);
 
-      navigate(res.data.user.role === "artist" ? "/artist" : "/user");
+      // redirect
+      if (res.data.user.role === "artist") {
+        navigate("/artist");
+      } else {
+        navigate("/user");
+      }
 
     } catch (err) {
-      console.log("ERROR:", err.response?.data);
       alert(err.response?.data?.message || "Login failed");
     }
   };
@@ -45,32 +47,29 @@ const Login = ({ setUser }) => {
     <div className="flex justify-center items-center min-h-screen bg-gray-900">
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col gap-4 bg-gray-800 p-8 rounded-2xl text-white w-full max-w-md shadow-lg"
+        className="bg-gray-800 p-6 rounded-xl text-white w-80"
       >
-        <h2 className="text-2xl font-bold text-center">Login</h2>
+        <h2 className="text-xl mb-4">Login</h2>
 
-        {/* 🔥 Single Input */}
+        {/* EMAIL OR USERNAME */}
         <input
           type="text"
           placeholder="Email or Username"
-          value={loginInput}
-          onChange={(e) => setLoginInput(e.target.value)}
-          className="p-3 rounded bg-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          className="w-full p-2 mb-3 rounded bg-gray-700"
         />
 
-        {/* Password */}
+        {/* PASSWORD */}
         <input
           type="password"
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="p-3 rounded bg-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+          className="w-full p-2 mb-3 rounded bg-gray-700"
         />
 
-        <button
-          type="submit"
-          className="bg-green-500 py-3 rounded font-semibold hover:bg-green-600 transition"
-        >
+        <button className="w-full bg-green-500 py-2 rounded">
           Login
         </button>
       </form>
