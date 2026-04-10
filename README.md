@@ -1,6 +1,8 @@
 🎵 Media Music Player (Full Stack)
 
-A full-stack media music player application where users can listen to songs and artists can upload and analyze their music. This project demonstrates authentication, role-based access, music streaming, and analytics features.
+A full-stack Media-style music player application where users can listen to songs and artists can upload and analyze their music. The application includes authentication, role-based access control, music upload functionality, and analytics for artists.
+
+---
 
 🚀 Features
 
@@ -15,13 +17,14 @@ A full-stack media music player application where users can listen to songs and 
 - Register and Login as Artist
 - Upload songs
 - Listen to songs
-- View analytics of songs
+- View song analytics
 - Track how many times a song has been played
 
 📊 Analytics
 
-- Artists can see song play statistics
-- Track listener engagement
+- Artists can track total plays of their songs
+- Monitor listener engagement
+- View performance insights
 
 ---
 
@@ -31,7 +34,7 @@ Frontend
 
 - React.js
 - Vite
-- CSS
+- Tailwind CSS
 
 Backend
 
@@ -44,6 +47,26 @@ Database
 
 ---
 
+🔐 Security & Authentication
+
+This project implements several security and authentication mechanisms:
+
+- JWT Authentication
+- Bcrypt Password Hashing
+- Role-Based Authorization (User / Artist)
+- Protected Routes Middleware
+- CORS Security
+- Environment Variables (.env) Security
+
+---
+
+📂 File Upload Handling
+
+- Multer is used for handling audio file uploads from artists.
+- Uploaded songs are stored and served through backend APIs.
+
+---
+
 📁 Project Structure
 
 Spotify Music Player
@@ -52,6 +75,7 @@ Spotify Music Player
 │   ├── server.js
 │   ├── routes
 │   ├── controllers
+│   ├── middleware
 │   └── models
 │
 ├── Frontend
@@ -80,11 +104,15 @@ Spotify Music Player
 
 git clone https://github.com/Shivam092187/media-player-fullstack.git
 
+---
+
 2️⃣ Backend Setup
 
 cd Backend
 npm install
 node server.js
+
+---
 
 3️⃣ Frontend Setup
 
@@ -94,38 +122,32 @@ npm run dev
 
 ---
 
-🔐 Authentication
+🔑 Role Based Access
 
-The system supports role-based authentication:
+User
 
-- User Role → Can listen to songs
-- Artist Role → Can upload songs, listen to songs, and view analytics
+- Can listen to songs
 
----
+Artist
 
-📊 Artist Analytics
-
-Artists can monitor:
-
-- Total plays of their songs
-- Listener activity
-- Performance insights
+- Can upload songs
+- Can listen to songs
+- Can view analytics
 
 ---
 
 📌 Future Improvements
 
-- Playlist feature
-- Like / Favorite songs
-- Search songs
+- Playlist creation
+- Song search feature
+- Like / favorite songs
 - Music recommendation system
 - Improved UI/UX
 
 ---
 
 👨‍💻 Author
-
 Shivam
 
 Full Stack Developer
-Passionate about building scalable web applications.
+Focused on building scalable and secure web applications.
