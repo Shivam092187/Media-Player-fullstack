@@ -13,7 +13,7 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // ✅ Validation
+    // Validation
     if (!username || !email || !password) {
       alert("Please fill all fields!");
       return;
@@ -29,7 +29,7 @@ const Register = () => {
 
       alert("Registration successful! Please login.");
 
-      // ✅ Redirect only to login (NO auto login)
+      //  Redirect only to login (NO auto login)
       navigate("/login");
 
     } catch (err) {

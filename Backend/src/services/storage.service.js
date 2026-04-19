@@ -1,6 +1,6 @@
 const ImageKit = require("imagekit");
 
-// ✅ Safe initialization
+//  Safe initialization
 let imagekit;
 if (
   process.env.IMAGEKIT_PUBLIC_KEY &&
@@ -13,7 +13,7 @@ if (
     urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT
   });
 } else {
-  console.warn("⚠️ ImageKit keys missing! Uploads will not work.");
+  console.warn(" ImageKit keys missing! Uploads will not work.");
 }
 
 // Upload function
@@ -24,7 +24,7 @@ async function uploadFile(file) {
   const base64File = file.buffer.toString("base64");
 
   const response = await imagekit.upload({
-    file: `data:${file.mimetype};base64,${base64File}`, // ✅ correct base64 format
+    file: `data:${file.mimetype};base64,${base64File}`,
     fileName: `${Date.now()}-${file.originalname}`,
     folder: "/songs"
   });

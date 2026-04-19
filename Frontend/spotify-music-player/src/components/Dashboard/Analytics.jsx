@@ -5,7 +5,7 @@ const Analytics = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // 🔥 fetch analytics
+  //  fetch analytics
   const fetchAnalytics = async () => {
     try {
       const res = await API.get("/api/music/analytics");
@@ -21,7 +21,7 @@ const Analytics = () => {
     // initial load
     fetchAnalytics();
 
-    // 🔥 listen when any song is played
+    //  listen when any song is played
     const handleSongPlayed = () => {
       fetchAnalytics(); // instant update
     };
@@ -42,7 +42,7 @@ const Analytics = () => {
     );
   }
 
-  // ❌ no data
+  // no data
   if (!data) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-900 text-red-500">

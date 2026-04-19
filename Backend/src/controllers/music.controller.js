@@ -2,7 +2,7 @@ const musicModel = require('../models/music.model');
 const { uploadFile } = require('../services/storage.service');
 const mongoose = require("mongoose");
 
-// ✅ Upload music
+//  Upload music
 const musicCreate = async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ message: "File required" });
@@ -13,7 +13,7 @@ const musicCreate = async (req, res) => {
       title: req.body.title,
       uri: result.url,
       artist: req.user.id,
-      plays: 0 // 🔥 add (safe)
+      plays: 0 
     });
 
     console.log("DEBUG - Music created:", music);
@@ -28,7 +28,7 @@ const musicCreate = async (req, res) => {
 
 
 
-// ✅ Get all songs
+// Get all songs
 const getAllmusic = async (req, res) => {
   try {
     const musics = await musicModel.find();
@@ -46,7 +46,7 @@ const getAllmusic = async (req, res) => {
 
 
 
-// 🔥 NEW: Play song (increment plays)
+//  NEW: Play song (increment plays)
 const playSong = async (req, res) => {
   try {
     console.log("PLAY API HIT"); // 🔍 debug
@@ -57,7 +57,7 @@ const playSong = async (req, res) => {
       return res.status(404).json({ message: "Song not found" });
     }
 
-    // 🔥 SAFE increment (IMPORTANT)
+    //  SAFE increment (IMPORTANT)
     song.plays = (song.plays || 0) + 1;
 
     await song.save();
@@ -76,7 +76,7 @@ const playSong = async (req, res) => {
 };
 
 
-// 🔥 NEW: Analytics
+//  NEW: Analytics
 const getAnalytics = async (req, res) => {
   try {
     const songs = await musicModel.find(); // 🔥 FIX

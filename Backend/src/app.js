@@ -6,7 +6,7 @@ const musicRoutes = require("./routes/music.routes");
 
 const app = express();
 
-// ✅ CORS (safe + working)
+// CORS (safe + working)
 const allowedOrigins = [
   "http://localhost:5173",
   "https://media-player-fullstack-2.onrender.com",

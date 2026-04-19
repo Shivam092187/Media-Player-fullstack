@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 
-// 🔐 Common function (DRY principle)
+//  Common function (DRY principle)
 const verifyToken = (req) => {
   const authHeader = req.headers.authorization;
 

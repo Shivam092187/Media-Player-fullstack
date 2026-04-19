@@ -17,7 +17,7 @@ const App = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // 🔥 AUTH CHECK ON APP LOAD
+  //  AUTH CHECK ON APP LOAD
   useEffect(() => {
     const checkUser = async () => {
       try {
@@ -33,7 +33,7 @@ const App = () => {
     checkUser();
   }, []);
 
-  // 🔥 LOGOUT
+  //  LOGOUT
   const handleLogout = async () => {
     try {
       await API.post("/api/auth/logout");
@@ -45,7 +45,7 @@ const App = () => {
     setUser(null);
   };
 
-  // 🔥 LOADING SCREEN (IMPORTANT)
+  //  LOADING SCREEN (IMPORTANT)
   if (loading) {
     return (
       <div className="min-h-screen flex justify-center items-center bg-gray-900 text-white">

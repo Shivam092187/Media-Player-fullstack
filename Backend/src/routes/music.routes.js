@@ -5,7 +5,7 @@ const musicController = require('../controllers/music.controller');
 
 const router = express.Router();
 
-// ✅ Multer config
+// Multer config
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 10 * 1024 * 1024 } // 10MB
@@ -13,25 +13,25 @@ const upload = multer({
 
 // ================= ROUTES =================
 
-// 🎵 Upload song (artist only)
+//  Upload song (artist only)
 router.post(
   "/upload",
   authArtist,
-  upload.single("music"), // ⚠️ field name must match frontend
+  upload.single("music"), 
   musicController.musicCreate
 );
 
-// 🎧 Get all songs (public)
+// Get all songs (public)
 router.get("/", musicController.getAllmusic);
 
-// ▶️ Play song (login required)
+// Play song (login required)
 router.get(
   "/play/:id",
   authUser,
   musicController.playSong
 );
 
-// 📊 Analytics (artist only)
+// Analytics (artist only)
 router.get(
   "/analytics",
   authArtist,

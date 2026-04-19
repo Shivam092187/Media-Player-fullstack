@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "https://media-player-fullstack-1.onrender.com/", // 👈 backend yahi chal raha hai
+  baseURL: "https://media-player-fullstack-1.onrender.com/", //  backend yahi chal raha hai
   withCredentials: false,
 });
 
@@ -20,7 +20,7 @@ export const getAllSongs = () => API.get("/api/music");
 export const playSong = (id) =>
   API.get(`/api/music/play/${id}`);
 
-// 🔐 Auth APIs
+//  Auth APIs
 export const registerUser = (data) =>
   API.post("/api/auth/register", data);
 
