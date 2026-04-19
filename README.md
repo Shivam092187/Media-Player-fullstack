@@ -4,6 +4,13 @@ A full-stack Media-style music player application where users can listen to song
 
 ---
 
+🚀 Live Demo
+
+Frontend: https://media-player-fullstack-2.onrender.com  
+Backend API: https://media-player-fullstack-1.onrender.com
+
+---
+
 🚀 Features
 
 👤 User
@@ -49,8 +56,6 @@ Database
 
 🔐 Security & Authentication
 
-This project implements several security and authentication mechanisms:
-
 - JWT Authentication
 - Bcrypt Password Hashing
 - Role-Based Authorization (User / Artist)
@@ -72,29 +77,7 @@ This project implements several security and authentication mechanisms:
 Spotify Music Player
 │
 ├── Backend
-│   ├── server.js
-│   ├── routes
-│   ├── controllers
-│   ├── middleware
-│   └── models
-│
 ├── Frontend
-│   └── spotify-music-player
-│       ├── src
-│       │   ├── components
-│       │   │   ├── Auth
-│       │   │   │   ├── Login.jsx
-│       │   │   │   └── Register.jsx
-│       │   │   ├── Dashboard
-│       │   │   │   ├── ArtistDashboard.jsx
-│       │   │   │   ├── UserDashboard.jsx
-│       │   │   │   └── Analytics.jsx
-│       │   │   └── Navbar.jsx
-│       │   ├── services
-│       │   │   └── api.js
-│       │   ├── App.jsx
-│       │   └── main.jsx
-│       └── package.json
 
 ---
 
@@ -104,35 +87,17 @@ Spotify Music Player
 
 git clone https://github.com/Shivam092187/media-player-fullstack.git
 
----
-
 2️⃣ Backend Setup
 
 cd Backend
 npm install
 node server.js
 
----
-
 3️⃣ Frontend Setup
 
 cd Frontend/spotify-music-player
 npm install
 npm run dev
-
----
-
-🔑 Role Based Access
-
-User
-
-- Can listen to songs
-
-Artist
-
-- Can upload songs
-- Can listen to songs
-- Can view analytics
 
 ---
 
@@ -146,8 +111,6 @@ Artist
 
 ---
 
-👨‍💻 Author
-Shivam
-
+👨‍💻 Author  
+Shivam  
 Full Stack Developer
-Focused on building scalable and secure web applications.
