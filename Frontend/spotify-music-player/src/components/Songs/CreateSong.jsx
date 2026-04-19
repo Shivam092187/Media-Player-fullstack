@@ -21,7 +21,7 @@ const CreateSong = ({ onUpload }) => {
     try {
       setLoading(true);
 
-      const res = await API.post("/music/upload", formData, {
+      const res = await API.post("api/music/upload", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 

@@ -1,4 +1,3 @@
-// src/App.jsx
 import React, { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
@@ -10,77 +9,134 @@ import Navbar from "./components/Navbar";
 
 import CreateSong from "./components/Songs/CreateSong";
 import SongList from "./components/Songs/SongList";
-import Analytics from "./components/Dashboard/Analytics"; 
+import Analytics from "./components/Dashboard/Analytics";
 
 import API from "./services/api";
 
 const App = () => {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
+  // 🔥 AUTH CHECK ON APP LOAD
   useEffect(() => {
-    API.get("/auth/me")
-      .then((res) => setUser(res.data.user))
-      .catch(() => setUser(null));
+    const checkUser = async () => {
+      try {
+        const res = await API.get("/api/auth/me");
+        setUser(res.data.user);
+      } catch (err) {
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkUser();
   }, []);
 
+  // 🔥 LOGOUT
   const handleLogout = async () => {
-    await API.post("/auth/logout");
+    try {
+      await API.post("/api/auth/logout");
+    } catch (err) {
+      console.log(err);
+    }
+
+    localStorage.removeItem("token");
     setUser(null);
   };
 
+  // 🔥 LOADING SCREEN (IMPORTANT)
+  if (loading) {
+    return (
+      <div className="min-h-screen flex justify-center items-center bg-gray-900 text-white">
+        Loading...
+      </div>
+    );
+  }
+
   return (
     <BrowserRouter>
+      {/* Navbar only after auth check */}
       <Navbar user={user} onLogout={handleLogout} />
 
       <Routes>
 
-        {/* Home Redirect */}
+        {/* HOME REDIRECT */}
         <Route
           path="/"
           element={
-            user
-              ? user.role === "artist"
-                ? <Navigate to="/artist" />
-                : <Navigate to="/user" />
-              : <Navigate to="/login" />
+            user ? (
+              user.role === "artist" ? (
+                <Navigate to="/artist" />
+              ) : (
+                <Navigate to="/user" />
+              )
+            ) : (
+              <Navigate to="/login" />
+            )
           }
         />
 
-        {/* Auth */}
-        <Route path="/login" element={<Login setUser={setUser} />} />
-        <Route path="/register" element={<Register setUser={setUser} />} />
+        {/* AUTH ROUTES */}
+        <Route
+          path="/login"
+          element={
+            user ? (
+              <Navigate to="/" />
+            ) : (
+              <Login setUser={setUser} />
+            )
+          }
+        />
 
-        {/* User Dashboard */}
+        <Route
+          path="/register"
+          element={
+            user ? (
+              <Navigate to="/" />
+            ) : (
+              <Register setUser={setUser} />
+            )
+          }
+        />
+
+        {/* USER DASHBOARD */}
         <Route
           path="/user"
           element={
-            user?.role === "user"
-              ? <UserDashboard />
-              : <Navigate to="/login" />
+            user?.role === "user" ? (
+              <UserDashboard />
+            ) : (
+              <Navigate to="/login" />
+            )
           }
         />
 
-        {/* Artist Dashboard */}
+        {/* ARTIST DASHBOARD */}
         <Route
           path="/artist"
           element={
-            user?.role === "artist"
-              ? <ArtistDashboard />
-              : <Navigate to="/login" />
+            user?.role === "artist" ? (
+              <ArtistDashboard />
+            ) : (
+              <Navigate to="/login" />
+            )
           }
         />
 
-        {/* Upload Song */}
+        {/* UPLOAD SONG */}
         <Route
           path="/upload"
           element={
-            user?.role === "artist"
-              ? <CreateSong />
-              : <Navigate to="/login" />
+            user?.role === "artist" ? (
+              <CreateSong />
+            ) : (
+              <Navigate to="/login" />
+            )
           }
         />
 
-        {/* My Songs */}
+        {/* MY SONGS */}
         <Route
           path="/mysongs"
           element={
@@ -95,13 +151,15 @@ const App = () => {
           }
         />
 
-        {/* 🔥 NEW: Analytics */}
+        {/* ANALYTICS */}
         <Route
           path="/analytics"
           element={
-            user?.role === "artist"
-              ? <Analytics />
-              : <Navigate to="/login" />
+            user?.role === "artist" ? (
+              <Analytics />
+            ) : (
+              <Navigate to="/login" />
+            )
           }
         />
 

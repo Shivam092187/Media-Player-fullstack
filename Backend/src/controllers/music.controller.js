@@ -79,9 +79,12 @@ const playSong = async (req, res) => {
 // 🔥 NEW: Analytics
 const getAnalytics = async (req, res) => {
   try {
-    const songs = await musicModel.find({ artist: req.user.id });
+    const songs = await musicModel.find(); // 🔥 FIX
 
-    const totalPlays = songs.reduce((sum, s) => sum + (s.plays || 0), 0);
+    const totalPlays = songs.reduce(
+      (sum, s) => sum + (s.plays || 0),
+      0
+    );
 
     const topSong = songs.length
       ? songs.reduce((prev, curr) =>
@@ -101,7 +104,6 @@ const getAnalytics = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
-
 
 module.exports = {
   musicCreate,

@@ -1,8 +1,8 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
-  withCredentials: true,
+  baseURL: "http://localhost:3000", // 👈 backend yahi chal raha hai
+  withCredentials: false,
 });
 
 // token attach
@@ -14,21 +14,17 @@ API.interceptors.request.use((config) => {
   return config;
 });
 
+// 🎵 Music APIs
+export const getAllSongs = () => API.get("/api/music");
 
-export const getAllSongs = () => {
-  return API.get("/api/music");
-};
+export const playSong = (id) =>
+  API.get(`/api/music/play/${id}`);
 
-export const playSong = (id) => {
-  return API.get(`/api/music/play/${id}`);
-};
+// 🔐 Auth APIs
+export const registerUser = (data) =>
+  API.post("/api/auth/register", data);
 
-export const registerUser = (data) => {
-  return API.post("/api/auth/register", data);
-};
-
-export const loginUser = (data) => {
-  return API.post("/api/auth/login", data);
-};
+export const loginUser = (data) =>
+  API.post("/api/auth/login", data);
 
 export default API;
