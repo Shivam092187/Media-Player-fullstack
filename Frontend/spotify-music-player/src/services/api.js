@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://localhost:3000", // 👈 backend yahi chal raha hai
+  baseURL: "https://media-player-fullstack-1.onrender.com/", // 👈 backend yahi chal raha hai
   withCredentials: false,
 });
 
